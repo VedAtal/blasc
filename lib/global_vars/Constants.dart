@@ -120,7 +120,6 @@ class Constants {
       'Tough-Minded',
       'Peer Support',
       'Conflict Resolution and Negotiation',
-      'E',
       'Team Sport',
       'Collaborative Teamwork',
       'Community Volunteering',
