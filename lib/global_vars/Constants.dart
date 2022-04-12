@@ -190,7 +190,7 @@ class Constants {
     'Community Volunteering': false,
     'Enterprising Entrepreneurship': false,
     'Zest+Humor': false,
-    'Event Organizer of Volunteer': false,
+    'Event Organizer or Volunteer': false,
     'Reading': false,
     'Spelling': false,
     'Grammar': false,
