@@ -116,6 +116,7 @@ class _EditState extends State<DesktopEdit> {
                           padding: const EdgeInsets.all(15),
                           child: IconButton(
                             hoverColor: Colors.transparent,
+                            splashColor: Colors.transparent,
                             icon: const Icon(
                               Icons.delete,
                               color: Colors.red,
@@ -248,6 +249,7 @@ class _EditState extends State<DesktopEdit> {
                           ),
                           iconSize: currentWidth * 0.025,
                           hoverColor: Colors.transparent,
+                          splashColor: Colors.transparent,
                         ),
                       ),
                     ),

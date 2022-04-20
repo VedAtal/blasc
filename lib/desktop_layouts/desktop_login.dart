@@ -2,6 +2,7 @@ import 'package:blasc/desktop_layouts/desktop_create_account.dart';
 import 'package:blasc/global_vars/mobile_message.dart';
 import 'package:blasc/routes/noTransitionRoute.dart';
 import 'package:blasc/routes/popUpRoute.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:blasc/global_vars/Constants.dart';
@@ -21,6 +22,8 @@ class DesktopLoginState extends State<DesktopLogin> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
+  bool _hidePassword = true;
+
   @override
   void dispose() {
     _emailController.dispose();
@@ -35,7 +38,6 @@ class DesktopLoginState extends State<DesktopLogin> {
         email: _emailController.text.trim(),
         password: _passwordController.text,
       );
-      dispose();
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         showDialog(
@@ -79,7 +81,27 @@ class DesktopLoginState extends State<DesktopLogin> {
   void _verifyCredentials() {
     _auth.authStateChanges().listen((User? user) {
       if (user != null) {
+        if (!user.emailVerified) {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return const AlertDialog(
+                content: Text(
+                  'That email has not been verified.',
+                ),
+              );
+            },
+          );
+          return;
+        }
         Constants.user = FirebaseAuth.instance.currentUser;
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc(Constants.user!.uid)
+            .update({
+          'Verified': true,
+        });
+        dispose();
         Navigator.push(
           context,
           noTransitionRoute(
@@ -165,12 +187,24 @@ class DesktopLoginState extends State<DesktopLogin> {
                   ),
                   width: (currentWidth * 0.4) * 0.7,
                   child: TextField(
-                    obscureText: true,
+                    obscureText: _hidePassword,
                     obscuringCharacter: '*',
                     controller: _passwordController,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
                       labelText: 'Password',
+                      suffixIcon: IconButton(
+                        hoverColor: Colors.transparent,
+                        splashColor: Colors.transparent,
+                        onPressed: () {
+                          setState(() {
+                            _hidePassword = !_hidePassword;
+                          });
+                        },
+                        icon: Icon(_hidePassword
+                            ? Icons.visibility
+                            : Icons.visibility_off),
+                      ),
                     ),
                   ),
                 ),

@@ -25,6 +25,7 @@ class Menu extends StatelessWidget {
       ),
       child: InkWell(
         hoverColor: Colors.transparent,
+        splashColor: Colors.transparent,
         onTap: () {
           Navigator.push(
               context,

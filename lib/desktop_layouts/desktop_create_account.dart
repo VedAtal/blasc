@@ -1,5 +1,6 @@
 import 'package:blasc/global_vars/mobile_message.dart';
 import 'package:blasc/routes/noTransitionRoute.dart';
+import 'package:blasc/routes/popUpRoute.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -20,6 +21,7 @@ class DesktopCreateAccountState extends State<DesktopCreateAccount> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  bool _validAccount = true;
 
   @override
   void dispose() {
@@ -36,7 +38,6 @@ class DesktopCreateAccountState extends State<DesktopCreateAccount> {
         email: _emailController.text.trim(),
         password: _passwordController.text,
       );
-      dispose();
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         showDialog(
@@ -49,6 +50,7 @@ class DesktopCreateAccountState extends State<DesktopCreateAccount> {
             );
           },
         );
+        _validAccount = false;
       } else if (e.code == 'email-already-in-use') {
         showDialog(
           context: context,
@@ -60,6 +62,7 @@ class DesktopCreateAccountState extends State<DesktopCreateAccount> {
             );
           },
         );
+        _validAccount = false;
       } else if (_emailController.text == '') {
         showDialog(
           context: context,
@@ -72,34 +75,67 @@ class DesktopCreateAccountState extends State<DesktopCreateAccount> {
             );
           },
         );
+        _validAccount = false;
       }
     }
+    _validAccount = true;
   }
 
-  // verify that user is signed in
-  void _verifyCredentials() {
-    _auth.authStateChanges().listen((User? user) {
-      if (user != null) {
-        Constants.user = FirebaseAuth.instance.currentUser;
-        FirebaseFirestore.instance
-            .collection('users')
-            .doc(Constants.user!.uid)
-            .set({
-          'UID': Constants.user!.uid,
-          'Email': Constants.user!.email,
-        });
-        Navigator.push(
-          context,
-          noTransitionRoute(
-            builder: ((context) => const ResponsiveLayout(
-                  DesktopDashboard(),
-                  MobileMessage(),
-                )),
+  // send email verification
+  void _sendVerification() async {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return const AlertDialog(
+          content: Text(
+            'A verification has been sent to your email. Click\n'
+            'the link to verify your account to be able to login.',
+            textAlign: TextAlign.center,
           ),
         );
+      },
+    ).then((value) => Navigator.pop(context));
+    _auth.authStateChanges().listen((User? user) async {
+      Constants.user = user;
+      if (user != null) {
+        FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+          'UID': Constants.user!.uid,
+          'Email': Constants.user!.email,
+          'Password': _passwordController.text,
+          'Verified': false,
+        });
+        await Constants.user!.sendEmailVerification();
+        dispose();
       }
     });
   }
+
+  // verify that user is signed in
+  // void _verifyCredentials() {
+  //   _auth.authStateChanges().listen((User? user) {
+  //     if (user != null && user.emailVerified) {
+  //       Constants.user = FirebaseAuth.instance.currentUser;
+  //       FirebaseFirestore.instance
+  //           .collection('users')
+  //           .doc(Constants.user!.uid)
+  //           .set({
+  //         'UID': Constants.user!.uid,
+  //         'Email': Constants.user!.email,
+  //         'Password': _passwordController.text,
+  //       });
+  //       dispose();
+  //       Navigator.push(
+  //         context,
+  //         noTransitionRoute(
+  //           builder: ((context) => const ResponsiveLayout(
+  //                 DesktopDashboard(),
+  //                 MobileMessage(),
+  //               )),
+  //         ),
+  //       );
+  //     }
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -238,7 +274,10 @@ class DesktopCreateAccountState extends State<DesktopCreateAccount> {
                         return;
                       }
                       _createAccount();
-                      _verifyCredentials();
+                      if (_validAccount) {
+                        _sendVerification();
+                      }
+                      // _verifyCredentials();
                     },
                     child: Text(
                       'Create',
