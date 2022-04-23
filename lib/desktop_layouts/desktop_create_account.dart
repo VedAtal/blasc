@@ -21,7 +21,6 @@ class DesktopCreateAccountState extends State<DesktopCreateAccount> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  bool _validAccount = true;
 
   @override
   void dispose() {
@@ -50,7 +49,7 @@ class DesktopCreateAccountState extends State<DesktopCreateAccount> {
             );
           },
         );
-        _validAccount = false;
+        return;
       } else if (e.code == 'email-already-in-use') {
         showDialog(
           context: context,
@@ -62,7 +61,7 @@ class DesktopCreateAccountState extends State<DesktopCreateAccount> {
             );
           },
         );
-        _validAccount = false;
+        return;
       } else if (_emailController.text == '') {
         showDialog(
           context: context,
@@ -75,10 +74,10 @@ class DesktopCreateAccountState extends State<DesktopCreateAccount> {
             );
           },
         );
-        _validAccount = false;
+        return;
       }
     }
-    _validAccount = true;
+    _sendVerification();
   }
 
   // send email verification
@@ -101,7 +100,6 @@ class DesktopCreateAccountState extends State<DesktopCreateAccount> {
         FirebaseFirestore.instance.collection('users').doc(user.uid).set({
           'UID': Constants.user!.uid,
           'Email': Constants.user!.email,
-          'Password': _passwordController.text,
           'Verified': false,
         });
         await Constants.user!.sendEmailVerification();
@@ -274,9 +272,6 @@ class DesktopCreateAccountState extends State<DesktopCreateAccount> {
                         return;
                       }
                       _createAccount();
-                      if (_validAccount) {
-                        _sendVerification();
-                      }
                       // _verifyCredentials();
                     },
                     child: Text(

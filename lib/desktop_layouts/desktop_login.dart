@@ -1,4 +1,5 @@
 import 'package:blasc/desktop_layouts/desktop_create_account.dart';
+import 'package:blasc/desktop_layouts/desktop_password_reset.dart';
 import 'package:blasc/global_vars/mobile_message.dart';
 import 'package:blasc/routes/noTransitionRoute.dart';
 import 'package:blasc/routes/popUpRoute.dart';
@@ -243,32 +244,41 @@ class DesktopLoginState extends State<DesktopLogin> {
                 // forgot password and create account
                 Row(
                   children: [
-                    // FUTURE ADDITION
                     // forgot password
-                    // Container(
-                    //   margin: EdgeInsets.fromLTRB(
-                    //     (currentWidth * 0.4) * 0.6 * 0.1,
-                    //     (currentHeight * 0.4) * 0.25 * 0.15,
-                    //     (currentWidth * 0.4) * 0.7 * 0.1,
-                    //     (currentHeight * 0.4) * 0.25 * 0.15,
-                    //   ),
-                    //   child: InkWell(
-                    //     onTap: () {},
-                    //     child: Text(
-                    //       'Forgot Password',
-                    //       style: TextStyle(
-                    //         color: Colors.blue,
-                    //         decoration: TextDecoration.underline,
-                    //         fontSize: (currentHeight * 0.4) * 0.04,
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
-
-                    // create account
                     Container(
                       margin: EdgeInsets.fromLTRB(
                         (currentWidth * 0.4) * 0.6 * 0.1,
+                        (currentHeight * 0.4) * 0.25 * 0.15,
+                        (currentWidth * 0.4) * 0.6 * 0.15,
+                        (currentHeight * 0.4) * 0.25 * 0.15,
+                      ),
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            PopUpRoute(
+                              builder: (context) => const ResponsiveLayout(
+                                DesktopPasswordRecovery(),
+                                MobileMessage(),
+                              ),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          'Forgot Password',
+                          style: TextStyle(
+                            color: Colors.blue,
+                            decoration: TextDecoration.underline,
+                            fontSize: (currentHeight * 0.4) * 0.04,
+                          ),
+                        ),
+                      ),
+                    ),
+                    // create account
+                    Container(
+                      margin: EdgeInsets.fromLTRB(
+                        (currentWidth * 0.4) * 0.6 * 0.15,
                         (currentHeight * 0.4) * 0.25 * 0.15,
                         (currentWidth * 0.4) * 0.6 * 0.1,
                         (currentHeight * 0.4) * 0.25 * 0.15,
