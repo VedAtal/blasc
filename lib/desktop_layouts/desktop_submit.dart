@@ -14,6 +14,8 @@ class DesktopSubmit extends StatefulWidget {
 }
 
 class _SubmitState extends State<DesktopSubmit> {
+  final ScrollController _scroller = ScrollController();
+
   final adventureTitleController = TextEditingController();
   final adventureDescriptionController = TextEditingController();
   final adventureLinkControllers = [
@@ -22,6 +24,18 @@ class _SubmitState extends State<DesktopSubmit> {
     TextEditingController(),
     TextEditingController(),
   ];
+
+  String? _titleError;
+  String? _descriptionError;
+  final List<String?> _linkErrors = [
+    null,
+    null,
+    null,
+    null,
+  ];
+  bool _subjectError = false;
+  bool _skillError = false;
+  bool _imageError = false;
 
   @override
   void dispose() {
@@ -40,6 +54,7 @@ class _SubmitState extends State<DesktopSubmit> {
 
     return Scaffold(
       body: CustomScrollView(
+        controller: _scroller,
         slivers: [
           SliverList(
             delegate: SliverChildListDelegate(
@@ -158,8 +173,16 @@ class _SubmitState extends State<DesktopSubmit> {
                             floatingLabelBehavior: FloatingLabelBehavior.auto,
                             border: const OutlineInputBorder(),
                             alignLabelWithHint: true,
+                            errorText: _titleError,
                           ),
                           maxLength: 100,
+                          onChanged: (text) {
+                            if (text.trim() != '') {
+                              setState(() {
+                                _titleError = null;
+                              });
+                            }
+                          },
                         ),
                       ),
                       // adventure description
@@ -182,12 +205,29 @@ class _SubmitState extends State<DesktopSubmit> {
                             floatingLabelBehavior: FloatingLabelBehavior.auto,
                             border: const OutlineInputBorder(),
                             alignLabelWithHint: true,
+                            errorText: _descriptionError,
                           ),
                           maxLength: 500,
+                          onChanged: (text) {
+                            if (text.trim() != '') {
+                              setState(() {
+                                _descriptionError = null;
+                              });
+                            }
+                          },
                         ),
                       ),
                       // adventure subjects
                       Container(
+                        padding: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          border: Border.all(
+                            color:
+                                _subjectError ? Colors.red : Colors.transparent,
+                            width: 1,
+                          ),
+                        ),
                         margin: EdgeInsets.only(
                           bottom: currentHeight * 0.04,
                         ),
@@ -212,6 +252,7 @@ class _SubmitState extends State<DesktopSubmit> {
                                   setState(() {
                                     Constants.subjectSelected[subject] =
                                         !Constants.subjectSelected[subject]!;
+                                    _subjectError = false;
                                   });
                                 },
                                 child: Container(
@@ -231,6 +272,7 @@ class _SubmitState extends State<DesktopSubmit> {
                                             setState(() {
                                               Constants.subjectSelected[
                                                   subject] = checked!;
+                                              _subjectError = false;
                                             });
                                           },
                                           activeColor: Constants.teal1,
@@ -257,6 +299,7 @@ class _SubmitState extends State<DesktopSubmit> {
                       ),
                       // adventure links
                       Container(
+                        padding: const EdgeInsets.all(5),
                         margin: EdgeInsets.only(
                           bottom: currentHeight * 0.04,
                         ),
@@ -297,7 +340,17 @@ class _SubmitState extends State<DesktopSubmit> {
                                         FloatingLabelBehavior.auto,
                                     border: const OutlineInputBorder(),
                                     alignLabelWithHint: true,
+                                    errorText: _linkErrors[
+                                        Constants.linkCount.indexOf(link)],
                                   ),
+                                  onChanged: (text) {
+                                    if (text.trim() != '') {
+                                      setState(() {
+                                        _linkErrors[Constants.linkCount
+                                            .indexOf(link)] = null;
+                                      });
+                                    }
+                                  },
                                 ),
                               );
                             }).toList(),
@@ -342,6 +395,8 @@ class _SubmitState extends State<DesktopSubmit> {
                                         adventureLinkControllers[
                                                 Constants.linkCounter - 1]
                                             .clear();
+                                        _linkErrors[Constants.linkCounter - 1] =
+                                            null;
                                       });
                                       Constants.linkCounter--;
                                     },
@@ -360,6 +415,15 @@ class _SubmitState extends State<DesktopSubmit> {
                       ),
                       // adventure skills
                       Container(
+                        padding: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          border: Border.all(
+                            color:
+                                _skillError ? Colors.red : Colors.transparent,
+                            width: 1,
+                          ),
+                        ),
                         margin: EdgeInsets.only(
                           bottom: currentHeight * 0.04,
                         ),
@@ -404,7 +468,8 @@ class _SubmitState extends State<DesktopSubmit> {
                                                       topic]!
                                                   ? const Icon(Icons
                                                       .arrow_drop_down_sharp)
-                                                  : const Icon(Icons.arrow_right),
+                                                  : const Icon(
+                                                      Icons.arrow_right),
                                               onPressed: () {
                                                 setState(() {
                                                   Constants.skillTopicSelected[
@@ -443,6 +508,7 @@ class _SubmitState extends State<DesktopSubmit> {
                                             Constants.skillSelected[skill] =
                                                 !Constants
                                                     .skillSelected[skill]!;
+                                            _skillError = false;
                                           });
                                         },
                                         child: Container(
@@ -466,6 +532,7 @@ class _SubmitState extends State<DesktopSubmit> {
                                                     setState(() {
                                                       Constants.skillSelected[
                                                           skill] = checked!;
+                                                      _skillError = false;
                                                     });
                                                   },
                                                   activeColor: Constants.teal1,
@@ -496,71 +563,85 @@ class _SubmitState extends State<DesktopSubmit> {
                         ),
                       ),
                       // adventure images
-                      Align(
-                        child: Container(
-                          margin: EdgeInsets.only(
-                            bottom: currentHeight * 0.02,
-                          ),
-                          child: Text(
-                            'Images',
-                            style: TextStyle(
-                              fontSize: currentWidth * 0.012,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        alignment: Alignment.centerLeft,
-                      ),
                       Container(
-                        margin: EdgeInsets.only(
-                          bottom: currentHeight * 0.02,
-                        ),
-                        height: currentHeight * 0.12,
-                        width: double.maxFinite,
-                        child: InkWell(
-                          child: DottedBorder(
-                            child: Center(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.cloud_upload_outlined,
-                                    size: currentWidth * 0.018,
+                        padding: const EdgeInsets.all(5),
+                        child: Column(
+                          children: [
+                            Align(
+                              child: Container(
+                                padding: const EdgeInsets.all(5),
+                                margin: EdgeInsets.only(
+                                  bottom: currentHeight * 0.02,
+                                ),
+                                child: Text(
+                                  'Images',
+                                  style: TextStyle(
+                                    fontSize: currentWidth * 0.012,
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                  Text(
-                                    'Click to Upload',
-                                    style: TextStyle(
-                                      fontSize: currentWidth * 0.01,
+                                ),
+                              ),
+                              alignment: Alignment.centerLeft,
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(
+                                bottom: currentHeight * 0.02,
+                              ),
+                              height: currentHeight * 0.12,
+                              width: double.maxFinite,
+                              child: InkWell(
+                                child: DottedBorder(
+                                  child: Center(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.cloud_upload_outlined,
+                                          size: currentWidth * 0.018,
+                                        ),
+                                        Text(
+                                          'Click to Upload',
+                                          style: TextStyle(
+                                            fontSize: currentWidth * 0.01,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                ],
+                                  strokeWidth: 2,
+                                  color: _imageError ? Colors.red : Colors.grey,
+                                  dashPattern: const [4],
+                                ),
+                                hoverColor: Colors.transparent,
+                                onTap: () async {
+                                  setState(() {
+                                    _imageError = false;
+                                  });
+                                  if (Constants.imageNameList.length == 5) {
+                                    return;
+                                  }
+                                  FilePickerResult? result =
+                                      await FilePicker.platform.pickFiles(
+                                    type: FileType.custom,
+                                    allowedExtensions: ['png', 'jpeg', 'jpg'],
+                                  );
+                                  if (result != null) {
+                                    Uint8List? file = result.files.first.bytes;
+                                    String fileName = result.files.first.name;
+                                    setState(() {
+                                      Constants.imageNameList.add(fileName);
+                                      Constants.imageList.add(file);
+                                      Constants.imageUUID
+                                          .add(const Uuid().v4());
+                                    });
+                                  }
+                                },
                               ),
                             ),
-                            strokeWidth: 2,
-                            color: Colors.grey,
-                            dashPattern: const [4],
-                          ),
-                          hoverColor: Colors.transparent,
-                          onTap: () async {
-                            if (Constants.imageNameList.length == 5) {
-                              return;
-                            }
-                            FilePickerResult? result =
-                                await FilePicker.platform.pickFiles(
-                              type: FileType.custom,
-                              allowedExtensions: ['png', 'jpeg', 'jpg'],
-                            );
-                            if (result != null) {
-                              Uint8List? file = result.files.first.bytes;
-                              String fileName = result.files.first.name;
-                              setState(() {
-                                Constants.imageNameList.add(fileName);
-                                Constants.imageList.add(file);
-                                Constants.imageUUID.add(const Uuid().v4());
-                              });
-                            }
-                          },
+                          ],
                         ),
                       ),
                       Container(
@@ -662,56 +743,97 @@ class _SubmitState extends State<DesktopSubmit> {
 
   // upload adventure information to firebase
   Future<void> submitAdventure() async {
-    var skills = [];
-    var subjects = [];
-    var links = [];
-    var imagePaths = [];
+    bool anyEmptyFields = false;
 
-    Constants.skillSelected.forEach((key, value) {
-      if (value == true) {
-        skills.add(key);
-      }
-    });
+    if (adventureTitleController.text.isEmpty) {
+      _titleError = 'Can\'t be empty';
+      anyEmptyFields = true;
+    }
 
-    Constants.subjectSelected.forEach((key, value) {
-      if (value == true) {
-        subjects.add(key);
-      }
-    });
+    if (adventureDescriptionController.text.isEmpty) {
+      _descriptionError = 'Can\'t be empty';
+      anyEmptyFields = true;
+    }
 
     for (int linkLoop = 0; linkLoop < Constants.linkCounter; linkLoop++) {
-      links.add(adventureLinkControllers[linkLoop].text.trim());
+      if (adventureLinkControllers[linkLoop].text.isEmpty) {
+        _linkErrors[linkLoop] = 'Can\'t be empty';
+        anyEmptyFields = true;
+      }
     }
 
-    for (String imageID in Constants.imageUUID) {
-      imagePaths.add('submission_images/' + imageID);
+    if (!Constants.subjectSelected.containsValue(true)) {
+      _subjectError = true;
+      anyEmptyFields = true;
     }
 
-    for (int uploadLoop = 0;
-        uploadLoop < Constants.imageNameList.length;
-        uploadLoop++) {
-      Constants.firebaseStorage
-          .ref('submission_images')
-          .child(Constants.imageUUID[uploadLoop])
-          .putData(Constants.imageList[uploadLoop]);
+    if (!Constants.skillSelected.containsValue(true)) {
+      _skillError = true;
+      anyEmptyFields = true;
     }
 
-    Constants.allSubmissions.add({
-      'Title': adventureTitleController.text.trim(),
-      'Description': adventureDescriptionController.text.trim(),
-      'Skills': skills,
-      'Subjects': subjects,
-      'Images': imagePaths,
-      'Links': links,
-      'Status': 'Pending',
-      'User': Constants.user!.email,
-      'UID': Constants.user!.uid,
-      'Created': FieldValue.serverTimestamp(),
-    });
+    if (Constants.imageList.isEmpty) {
+      _imageError = true;
+      anyEmptyFields = true;
+    }
 
-    clearSubmission();
+    if (anyEmptyFields) {
+      setState(() {
+        _scroller.jumpTo(_scroller.position.minScrollExtent);
+      });
+      return;
+    }
 
-    Navigator.pop(context);
+      var skills = [];
+      var subjects = [];
+      var links = [];
+      var imagePaths = [];
+
+      Constants.skillSelected.forEach((key, value) {
+        if (value == true) {
+          skills.add(key);
+        }
+      });
+
+      Constants.subjectSelected.forEach((key, value) {
+        if (value == true) {
+          subjects.add(key);
+        }
+      });
+
+      for (int linkLoop = 0; linkLoop < Constants.linkCounter; linkLoop++) {
+        links.add(adventureLinkControllers[linkLoop].text.trim());
+      }
+
+      for (String imageID in Constants.imageUUID) {
+        imagePaths.add('submission_images/' + imageID);
+      }
+
+      for (int uploadLoop = 0;
+          uploadLoop < Constants.imageNameList.length;
+          uploadLoop++) {
+        Constants.firebaseStorage
+            .ref('submission_images')
+            .child(Constants.imageUUID[uploadLoop])
+            .putData(Constants.imageList[uploadLoop]);
+      }
+
+      Constants.allSubmissions.add({
+        'Title': adventureTitleController.text.trim(),
+        'Description': adventureDescriptionController.text.trim(),
+        'Skills': skills,
+        'Subjects': subjects,
+        'Images': imagePaths,
+        'Links': links,
+        'Status': 'Pending',
+        'User': Constants.user!.email,
+        'UID': Constants.user!.uid,
+        'Created': FieldValue.serverTimestamp(),
+      });
+
+      clearSubmission();
+
+      Navigator.pop(context);
   }
 
   // clear submission fields

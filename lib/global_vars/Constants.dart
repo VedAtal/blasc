@@ -31,7 +31,7 @@ class Constants {
     'Home': const ResponsiveLayout(DesktopDashboard(), MobileMessage()),
     'Examples': const ResponsiveLayout(DesktopExamples(), MobileMessage()),
     'Submission': const ResponsiveLayout(DesktopSubmission(), MobileMessage()),
-    'Status': user!.uid == 'YVu0Slk04tUp8wALOfdxI3zjuIs2'
+    'Status': user!.uid == 'cKV7qf9OZGhuMSQGGGXXQQezPoC2'
         ? const AdminStatus()
         : const ResponsiveLayout(DesktopStatus(), MobileMessage()),
   };

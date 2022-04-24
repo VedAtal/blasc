@@ -1,12 +1,7 @@
-import 'package:blasc/global_vars/mobile_message.dart';
-import 'package:blasc/routes/noTransitionRoute.dart';
-import 'package:blasc/routes/popUpRoute.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:blasc/global_vars/Constants.dart';
-import 'package:blasc/desktop_layouts/desktop_dashboard.dart';
-import 'package:blasc/responsive/responsive_layout.dart';
 
 class DesktopCreateAccount extends StatefulWidget {
   const DesktopCreateAccount({Key? key}) : super(key: key);
@@ -107,33 +102,6 @@ class DesktopCreateAccountState extends State<DesktopCreateAccount> {
       }
     });
   }
-
-  // verify that user is signed in
-  // void _verifyCredentials() {
-  //   _auth.authStateChanges().listen((User? user) {
-  //     if (user != null && user.emailVerified) {
-  //       Constants.user = FirebaseAuth.instance.currentUser;
-  //       FirebaseFirestore.instance
-  //           .collection('users')
-  //           .doc(Constants.user!.uid)
-  //           .set({
-  //         'UID': Constants.user!.uid,
-  //         'Email': Constants.user!.email,
-  //         'Password': _passwordController.text,
-  //       });
-  //       dispose();
-  //       Navigator.push(
-  //         context,
-  //         noTransitionRoute(
-  //           builder: ((context) => const ResponsiveLayout(
-  //                 DesktopDashboard(),
-  //                 MobileMessage(),
-  //               )),
-  //         ),
-  //       );
-  //     }
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -272,7 +240,6 @@ class DesktopCreateAccountState extends State<DesktopCreateAccount> {
                         return;
                       }
                       _createAccount();
-                      // _verifyCredentials();
                     },
                     child: Text(
                       'Create',
