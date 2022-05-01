@@ -15,7 +15,7 @@ class Constants {
   // firebase vars
   static final firestore = FirebaseFirestore.instance;
   static final firebaseStorage = FirebaseStorage.instance;
-  static var user = FirebaseAuth.instance.currentUser;
+  static User? user = FirebaseAuth.instance.currentUser;
   static final CollectionReference allSubmissions =
       firestore.collection('submissions');
 
@@ -48,7 +48,7 @@ class Constants {
         'to BeSomeone.',
     '2. Fill out the Submission form, including one or more '
         'good representative pictures.',
-    '3. Our curator will review (and potentially '
+    '3. Our curators will review (and potentially '
         'edit) your submission, and then either accept it (it\'s now in the app!) '
         'or decline it with notes. You\'ll receive an email when the status changes. '
         'If you\'re declined, feel free to review the notes, make changes, and '
@@ -243,7 +243,8 @@ class Constants {
   static const Color teal1 = Color.fromRGBO(26, 166, 159, 100);
   static const Color teal2 = Color.fromARGB(156, 4, 136, 129);
   static const Color gold = Color.fromARGB(255, 238, 176, 5);
-  static const Color backgroundTeal = Color.fromARGB(156, 190, 214, 213);
+  static const Color backgroundTeal = Color.fromARGB(156, 214, 243, 243);
+  // static const Color backgroundTeal = Color.fromARGB(156, 190, 214, 213);
 
   // methods
   static void BSredirect() async {

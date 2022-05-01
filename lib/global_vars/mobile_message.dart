@@ -24,10 +24,9 @@ class MobileMessage extends StatelessWidget {
                 fontSize: currentWidth * 0.05,
               ),
             ),
-            ImageGenerator(
-              'general_images/homePage.jpg',
-              currentWidth * 0.5,
-              null,
+            Image.asset(
+              'images/homePage.jpg',
+              height: currentWidth * 0.5,
             ),
           ],
         ),

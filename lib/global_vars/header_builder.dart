@@ -19,7 +19,6 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return AppBar(
       automaticallyImplyLeading: false,
       backgroundColor: Colors.white,
@@ -97,6 +96,7 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
                           ),
                           onPressed: () async {
                             await FirebaseAuth.instance.signOut();
+                            Constants.user = null;
                             Navigator.push(
                                 context,
                                 noTransitionRoute(

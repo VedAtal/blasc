@@ -781,59 +781,70 @@ class _SubmitState extends State<DesktopSubmit> {
       setState(() {
         _scroller.jumpTo(_scroller.position.minScrollExtent);
       });
+      showDialog(
+        context: context,
+        builder: (context) {
+          return const AlertDialog(
+            content: Text(
+              'Some fields are empty.',
+              textAlign: TextAlign.center,
+            ),
+          );
+        },
+      );
       return;
     }
 
-      var skills = [];
-      var subjects = [];
-      var links = [];
-      var imagePaths = [];
+    var skills = [];
+    var subjects = [];
+    var links = [];
+    var imagePaths = [];
 
-      Constants.skillSelected.forEach((key, value) {
-        if (value == true) {
-          skills.add(key);
-        }
-      });
-
-      Constants.subjectSelected.forEach((key, value) {
-        if (value == true) {
-          subjects.add(key);
-        }
-      });
-
-      for (int linkLoop = 0; linkLoop < Constants.linkCounter; linkLoop++) {
-        links.add(adventureLinkControllers[linkLoop].text.trim());
+    Constants.skillSelected.forEach((key, value) {
+      if (value == true) {
+        skills.add(key);
       }
+    });
 
-      for (String imageID in Constants.imageUUID) {
-        imagePaths.add('submission_images/' + imageID);
+    Constants.subjectSelected.forEach((key, value) {
+      if (value == true) {
+        subjects.add(key);
       }
+    });
 
-      for (int uploadLoop = 0;
-          uploadLoop < Constants.imageNameList.length;
-          uploadLoop++) {
-        Constants.firebaseStorage
-            .ref('submission_images')
-            .child(Constants.imageUUID[uploadLoop])
-            .putData(Constants.imageList[uploadLoop]);
-      }
+    for (int linkLoop = 0; linkLoop < Constants.linkCounter; linkLoop++) {
+      links.add(adventureLinkControllers[linkLoop].text.trim());
+    }
 
-      Constants.allSubmissions.add({
-        'Title': adventureTitleController.text.trim(),
-        'Description': adventureDescriptionController.text.trim(),
-        'Skills': skills,
-        'Subjects': subjects,
-        'Images': imagePaths,
-        'Links': links,
-        'Status': 'Pending',
-        'User': Constants.user!.email,
-        'UID': Constants.user!.uid,
-        'Created': FieldValue.serverTimestamp(),
-      });
+    for (String imageID in Constants.imageUUID) {
+      imagePaths.add('submission_images/' + imageID);
+    }
 
-      clearSubmission();
+    for (int uploadLoop = 0;
+        uploadLoop < Constants.imageNameList.length;
+        uploadLoop++) {
+      Constants.firebaseStorage
+          .ref('submission_images')
+          .child(Constants.imageUUID[uploadLoop])
+          .putData(Constants.imageList[uploadLoop]);
+    }
 
-      Navigator.pop(context);
+    Constants.allSubmissions.add({
+      'Title': adventureTitleController.text.trim(),
+      'Description': adventureDescriptionController.text.trim(),
+      'Skills': skills,
+      'Subjects': subjects,
+      'Images': imagePaths,
+      'Links': links,
+      'Status': 'Pending',
+      'User': Constants.user!.email,
+      'UID': Constants.user!.uid,
+      'Created': FieldValue.serverTimestamp(),
+    });
+
+    clearSubmission();
+
+    Navigator.pop(context);
   }
 
   // clear submission fields

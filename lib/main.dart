@@ -1,3 +1,4 @@
+import 'package:blasc/desktop_layouts/desktop_dashboard.dart';
 import 'package:blasc/desktop_layouts/desktop_submit.dart';
 import 'package:blasc/global_vars/mobile_message.dart';
 import 'package:flutter/material.dart';
@@ -38,6 +39,7 @@ class BLASC extends StatelessWidget {
         ),
       ),
       home: const ResponsiveLayout(DesktopHomepage(), MobileMessage()),
+      // home: const DesktopDashboard(),
     );
   }
 }

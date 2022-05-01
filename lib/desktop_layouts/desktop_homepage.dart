@@ -56,10 +56,9 @@ class _HomepageState extends State<DesktopHomepage> {
                       onTap: () {
                         Constants.BSredirect();
                       },
-                      child: ImageGenerator(
-                        'general_images/appLogo.jpg',
-                        (currentHeight * 0.075) * 0.7,
-                        null,
+                      child: Image.asset(
+                        'images/appLogo.jpg',
+                        height: (currentHeight * 0.075) * 0.7,
                       ),
                     ),
                   ),
@@ -123,10 +122,9 @@ class _HomepageState extends State<DesktopHomepage> {
                 ),
               ),
               // home logo
-              ImageGenerator(
-                'general_images/homePage.jpg',
-                null,
-                (currentWidth * 0.5) * 0.9,
+              Image.asset(
+                'images/homePage.jpg',
+                width: (currentWidth * 0.5) * 0.9,
               ),
             ],
           ),

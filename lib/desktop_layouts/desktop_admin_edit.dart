@@ -1,7 +1,9 @@
 import 'dart:typed_data';
 import 'package:blasc/global_vars/Constants.dart';
+import 'package:blasc/global_vars/image_retriever.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:uuid/uuid.dart';
@@ -31,6 +33,8 @@ class _EditState extends State<DesktopEdit> {
   ];
 
   int oldImageCount = 1;
+
+  var deleteImageFiles = [];
 
   @override
   void dispose() {
@@ -81,9 +85,9 @@ class _EditState extends State<DesktopEdit> {
       Constants.imageNameList.add(image);
     }
 
-    Constants.status[data['Status']] = true;
-
     oldImageCount = data['Images'].length;
+
+    Constants.status[data['Status']] = true;
 
     return super.initState();
   }
@@ -155,12 +159,24 @@ class _EditState extends State<DesktopEdit> {
                                       ),
                                     ),
                                     ElevatedButton(
-                                      onPressed: () {
+                                      onPressed: () async {
                                         Navigator.pop(context);
                                         Navigator.pop(context);
                                         Constants.allSubmissions
                                             .doc(docID)
                                             .delete();
+                                        for (int deleteLoop = 0;
+                                            deleteLoop < oldImageCount;
+                                            deleteLoop++) {
+                                          String? url = await ImageRetriever(
+                                                  Constants.imageNameList[
+                                                      deleteLoop])
+                                              .getData();
+                                          await FirebaseStorage.instance
+                                              .refFromURL(url as String)
+                                              .delete();
+                                        }
+                                        clearSubmission();
                                       },
                                       child: Text(
                                         'Delete',
@@ -712,6 +728,7 @@ class _EditState extends State<DesktopEdit> {
                         ),
                         child: Wrap(
                           children: [
+                            // # ADD IMAGE PREVIEW FEATURE
                             ...(Constants.imageNameList).map((imageName) {
                               return Container(
                                 padding: const EdgeInsets.all(3),
@@ -745,17 +762,32 @@ class _EditState extends State<DesktopEdit> {
                                           child: InkWell(
                                             onTap: () {
                                               setState(() {
-                                                Constants.imageNameList
-                                                    .remove(imageName);
-                                                Constants.imageList.remove(
-                                                    Constants.imageNameList
-                                                            .indexOf(
-                                                                imageName) -
-                                                        oldImageCount);
-                                                Constants.imageUUID.remove(
-                                                    imageName.toString().substring(18));
+                                                if (Constants.imageNameList
+                                                        .indexOf(imageName) <
+                                                    oldImageCount) {
+                                                  deleteImageFiles
+                                                      .add(imageName);
+                                                  Constants.imageNameList
+                                                      .remove(imageName);
+                                                  Constants.imageUUID.remove(
+                                                      imageName
+                                                          .toString()
+                                                          .substring(18));
+                                                  oldImageCount--;
+                                                } else {
+                                                  Constants.imageNameList
+                                                      .remove(imageName);
+                                                  Constants.imageUUID.remove(
+                                                      imageName
+                                                          .toString()
+                                                          .substring(18));
+                                                  Constants.imageList.remove(
+                                                      Constants.imageNameList
+                                                              .indexOf(
+                                                                  imageName) -
+                                                          oldImageCount);
+                                                }
                                               });
-                                              // ADD REMOVE FILE FROM STORAGE FEEATURE
                                             },
                                             child: Icon(
                                               Icons.close,
@@ -907,12 +939,8 @@ class _EditState extends State<DesktopEdit> {
       links.add(adventureLinkControllers[linkLoop].text.trim());
     }
 
-    for (String imageID in Constants.imageUUID) {
-      if (!imageID.contains('submission_images/')) {
-        imagePaths.add('submission_images/' + imageID);
-      } else {
-        imagePaths.add(imageID);
-      }
+    for (String imageID in Constants.imageNameList) {
+      imagePaths.add(imageID);
     }
 
     for (int uploadLoop = 0;
@@ -923,6 +951,14 @@ class _EditState extends State<DesktopEdit> {
           .child(Constants.imageUUID[oldImageCount])
           .putData(Constants.imageList[uploadLoop]);
       oldImageCount++;
+    }
+
+    for (int deleteLoop = 0;
+        deleteLoop < deleteImageFiles.length;
+        deleteLoop++) {
+      String? url =
+          await ImageRetriever(deleteImageFiles[deleteLoop]).getData();
+      await FirebaseStorage.instance.refFromURL(url as String).delete();
     }
 
     Constants.allSubmissions.doc(docID).set(

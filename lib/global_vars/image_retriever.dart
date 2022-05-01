@@ -6,7 +6,7 @@ class ImageRetriever {
 
   ImageRetriever(this.imageRef);
 
-  Future getData() async {
+  Future<String?> getData() async {
     try {
       await downloadURL();
       return imageURL;
