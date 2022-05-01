@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:blasc/global_vars/Constants.dart';
+import 'package:blasc/global_vars/image_generator.dart';
 import 'package:blasc/global_vars/image_retriever.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dotted_border/dotted_border.dart';
@@ -728,75 +729,89 @@ class _EditState extends State<DesktopEdit> {
                         ),
                         child: Wrap(
                           children: [
-                            // # ADD IMAGE PREVIEW FEATURE
                             ...(Constants.imageNameList).map((imageName) {
-                              return Container(
-                                padding: const EdgeInsets.all(3),
-                                margin: EdgeInsets.fromLTRB(
-                                  0,
-                                  0,
-                                  currentWidth * 0.003,
-                                  currentHeight * 0.005,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey,
-                                  borderRadius: BorderRadius.circular(4),
-                                  border: Border.all(
-                                    color: Colors.grey,
+                              return InkWell(
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                          content: ImageGenerator(
+                                        imageName,
+                                        null,
+                                        currentWidth * 0.08,
+                                      ));
+                                    },
+                                  );
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(3),
+                                  margin: EdgeInsets.fromLTRB(
+                                    0,
+                                    0,
+                                    currentWidth * 0.003,
+                                    currentHeight * 0.005,
                                   ),
-                                ),
-                                child: RichText(
-                                  text: TextSpan(
-                                    children: [
-                                      TextSpan(
-                                        text: imageName,
-                                        style: TextStyle(
-                                          fontSize: currentWidth * 0.01,
-                                        ),
-                                      ),
-                                      WidgetSpan(
-                                        child: Container(
-                                          margin: EdgeInsets.only(
-                                            left: currentWidth * 0.003,
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey,
+                                    borderRadius: BorderRadius.circular(4),
+                                    border: Border.all(
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  child: RichText(
+                                    text: TextSpan(
+                                      children: [
+                                        TextSpan(
+                                          text: imageName,
+                                          style: TextStyle(
+                                            fontSize: currentWidth * 0.01,
                                           ),
-                                          child: InkWell(
-                                            onTap: () {
-                                              setState(() {
-                                                if (Constants.imageNameList
-                                                        .indexOf(imageName) <
-                                                    oldImageCount) {
-                                                  deleteImageFiles
-                                                      .add(imageName);
-                                                  Constants.imageNameList
-                                                      .remove(imageName);
-                                                  Constants.imageUUID.remove(
-                                                      imageName
-                                                          .toString()
-                                                          .substring(18));
-                                                  oldImageCount--;
-                                                } else {
-                                                  Constants.imageNameList
-                                                      .remove(imageName);
-                                                  Constants.imageUUID.remove(
-                                                      imageName
-                                                          .toString()
-                                                          .substring(18));
-                                                  Constants.imageList.remove(
-                                                      Constants.imageNameList
-                                                              .indexOf(
-                                                                  imageName) -
-                                                          oldImageCount);
-                                                }
-                                              });
-                                            },
-                                            child: Icon(
-                                              Icons.close,
-                                              size: currentWidth * 0.011,
+                                        ),
+                                        WidgetSpan(
+                                          child: Container(
+                                            margin: EdgeInsets.only(
+                                              left: currentWidth * 0.003,
+                                            ),
+                                            child: InkWell(
+                                              onTap: () {
+                                                setState(() {
+                                                  if (Constants.imageNameList
+                                                          .indexOf(imageName) <
+                                                      oldImageCount) {
+                                                    deleteImageFiles
+                                                        .add(imageName);
+                                                    Constants.imageNameList
+                                                        .remove(imageName);
+                                                    Constants.imageUUID.remove(
+                                                        imageName
+                                                            .toString()
+                                                            .substring(18));
+                                                    oldImageCount--;
+                                                  } else {
+                                                    Constants.imageNameList
+                                                        .remove(imageName);
+                                                    Constants.imageUUID.remove(
+                                                        imageName
+                                                            .toString()
+                                                            .substring(18));
+                                                    Constants.imageList.remove(
+                                                        Constants.imageNameList
+                                                                .indexOf(
+                                                                    imageName) -
+                                                            oldImageCount);
+                                                  }
+                                                });
+                                              },
+                                              child: Icon(
+                                                Icons.close,
+                                                size: currentWidth * 0.011,
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
                               );

@@ -684,14 +684,15 @@ class _SubmitState extends State<DesktopSubmit> {
                                           child: InkWell(
                                             onTap: () {
                                               setState(() {
+                                                int index = Constants
+                                                    .imageNameList
+                                                    .indexOf(imageName);
                                                 Constants.imageNameList
                                                     .remove(imageName);
-                                                Constants.imageList.remove(
-                                                    Constants.imageNameList
-                                                        .indexOf(imageName));
-                                                Constants.imageUUID.remove(
-                                                    Constants.imageNameList
-                                                        .indexOf(imageName));
+                                                Constants.imageList
+                                                    .removeAt(index);
+                                                Constants.imageUUID
+                                                    .removeAt(index);
                                               });
                                             },
                                             child: Icon(
