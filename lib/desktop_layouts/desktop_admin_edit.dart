@@ -931,7 +931,7 @@ class _EditState extends State<DesktopEdit> {
     );
   }
 
-  // update adventure information to firebase
+  // update adventure information in firebase
   Future<void> updateAdventure() async {
     var skills = [];
     var subjects = [];
@@ -1021,6 +1021,7 @@ class _EditState extends State<DesktopEdit> {
     Constants.imageList.clear();
     Constants.imageNameList.clear();
     Constants.imageUUID.clear();
+    deleteImageFiles.clear();
 
     dispose();
   }
